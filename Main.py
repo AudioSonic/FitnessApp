@@ -1,26 +1,32 @@
 import tkinter as tk
-import pyodbc
+import mysql.connector
 
 def connect_to_database():
-    server = 'DESKTOP-6AK4AG6'
-    database = 'UserDB'
-    username = 'SA'
-    password = 'test'
-    connection_string = f'DRIVER=SQL Server;SERVER={server};DATABASE={database};UID={username};PWD={password}'
-    
+    host = 'sql11.freesqldatabase.com'
+    database = 'sql11665817'
+    username = 'sql11665817'
+    password = 'aYsmePsf1F'
+    port = 3306
+
     try:
-        connection = pyodbc.connect(connection_string)
+        connection = mysql.connector.connect(
+            host=host,
+            database=database,
+            user=username,
+            password=password,
+            port=port
+        )
         cursor = connection.cursor()
-        print("Verbindung zur Datenbank hergestellt.")
+        print("Verbindung zur MySQL-Datenbank hergestellt.")
         return connection, cursor
     except Exception as e:
-        print(f"Fehler bei der Verbindung zur Datenbank: {str(e)}")
+        print(f"Fehler bei der Verbindung zur MySQL-Datenbank: {str(e)}")
         return None, None
-   
+
 def insert_user_data(username, password, connection, cursor):
     try:
         # SQL-Befehl zum Einfügen von Daten
-        sql_query = f"INSERT INTO Benutzer (Benutzername, Passwort) VALUES ('{username}', '{password}')"
+        sql_query = f"INSERT INTO Kunden (Benutzername, Passwort) VALUES ('{username}', '{password}')"
         cursor.execute(sql_query)
         connection.commit()
         print("Benutzerdaten erfolgreich in die Datenbank eingefuegt.")
@@ -37,32 +43,28 @@ def on_submit():
     if connection and cursor:
         insert_user_data(username, password, connection, cursor)
         connection.close()
-        print("Verbindung zur Datenbank geschlossen.")
+        print("Verbindung zur MySQL-Datenbank geschlossen.")
     else:
-        print("Konnte keine Verbindung zur Datenbank herstellen.")
+        print("Konnte keine Verbindung zur MySQL-Datenbank herstellen.")
 
-# Hauptfenster erstellen
+# Rest des Codes bleibt unverändert
 root = tk.Tk()
 root.title("Login Form")
 root.geometry("200x200")
 
-# Benutzername Label und Eingabefeld
 label_username = tk.Label(root, text="Benutzername:")
 label_username.pack()
 
 entry_username = tk.Entry(root)
 entry_username.pack()
 
-# Passwort Label und Eingabefeld (Passwort-Feld für verdeckte Eingabe)
 label_password = tk.Label(root, text="Passwort:")
 label_password.pack()
 
 entry_password = tk.Entry(root, show="*")
 entry_password.pack()
 
-# Submit-Button
 submit_button = tk.Button(root, text="Submit", command=on_submit)
 submit_button.pack()
 
-# Tkinter-Schleife starten
 root.mainloop()
